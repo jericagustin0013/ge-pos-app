@@ -89,7 +89,9 @@
       color: var(--gold);
     }
     .install-btn {
-      display: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       min-height: 40px;
       border-radius: 7px;
       padding: 0 12px;
@@ -97,10 +99,13 @@
       color: white;
       font-weight: 950;
     }
+    .install-btn.unavailable {
+      background: white;
+      color: var(--muted);
+      border: 1px solid var(--line);
+    }
     .install-btn.ready {
       display: inline-flex;
-      align-items: center;
-      justify-content: center;
     }
     .fullscreen-btn {
       width: 40px;
@@ -338,6 +343,11 @@
     .modal { position: fixed; inset: 0; z-index: 50; display: none; align-items: center; justify-content: center; padding: 18px; background: rgba(23,32,38,.48); }
     .modal.open { display: flex; }
     .receipt { width: min(430px, 100%); max-height: 88vh; overflow: auto; background: white; border-radius: 8px; box-shadow: 0 24px 60px rgba(0,0,0,.24); }
+    .install-card { width: min(520px, 100%); max-height: 88vh; overflow: auto; background: white; border-radius: 8px; box-shadow: 0 24px 60px rgba(0,0,0,.24); }
+    .install-card-body { padding: 18px; display: grid; gap: 12px; }
+    .install-card ol { margin: 0; padding-left: 20px; color: var(--muted); line-height: 1.45; }
+    .install-card code { background: var(--soft); padding: 2px 5px; border-radius: 4px; color: var(--ink); }
+    .install-warning { padding: 10px; border-radius: 8px; background: #fff7ed; color: #9a5b12; font-size: .88rem; line-height: 1.4; }
     .receipt-body { padding: 20px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
     .receipt-body h2 { text-align: center; }
     .receipt-line { display: flex; justify-content: space-between; gap: 10px; padding: 6px 0; border-bottom: 1px dashed #d1d5db; font-size: .82rem; }
@@ -349,12 +359,64 @@
     @media (max-width: 860px) {
       main {
         grid-template-columns: 1fr;
-        padding-bottom: calc(150px + env(safe-area-inset-bottom));
+        padding: 10px 10px calc(112px + env(safe-area-inset-bottom));
       }
       body.fullscreen-mode main { padding-top: 82px; }
-      .topbar { align-items: flex-start; }
-      .session { margin-left: auto; }
-      .toolbar { grid-template-columns: 1fr; }
+      .topbar {
+        gap: 8px;
+        padding: 8px 10px;
+        align-items: center;
+      }
+      .brand {
+        gap: 8px;
+      }
+      .brand p {
+        display: none;
+      }
+      .mark {
+        width: 36px;
+        height: 36px;
+        border-radius: 7px;
+        font-size: .86rem;
+      }
+      .session {
+        margin-left: auto;
+        gap: 6px;
+      }
+      .session select {
+        height: 36px;
+        width: 138px;
+        font-size: .82rem;
+      }
+      .app-status {
+        display: none;
+      }
+      .install-btn,
+      .fullscreen-btn,
+      .session .ghost {
+        min-height: 36px;
+        height: 36px;
+      }
+      .session .ghost {
+        display: none;
+      }
+      .toolbar {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        margin-bottom: 9px;
+      }
+      .search input {
+        height: 38px;
+      }
+      .tabs {
+        padding: 3px;
+        gap: 4px;
+      }
+      .tab {
+        min-height: 32px;
+        padding: 0 10px;
+        font-size: .78rem;
+      }
       .nav {
         position: fixed;
         left: 0;
@@ -362,7 +424,7 @@
         bottom: 0;
         z-index: 34;
         margin: 0;
-        padding: 7px 8px calc(7px + env(safe-area-inset-bottom));
+        padding: 5px 6px calc(5px + env(safe-area-inset-bottom));
         border-radius: 0;
         border-left: 0;
         border-right: 0;
@@ -371,22 +433,141 @@
         box-shadow: 0 -10px 24px rgba(23,32,38,.12);
       }
       .nav button {
-        min-width: 86px;
-        min-height: 48px;
+        min-width: 74px;
+        min-height: 42px;
         flex: 1 0 auto;
         flex-direction: column;
         gap: 2px;
-        font-size: .76rem;
+        padding: 0 8px;
+        font-size: .72rem;
         scroll-snap-align: start;
       }
-      .ticket { position: fixed; inset: auto 0 0 0; top: 64px; z-index: 35; transform: translateY(110%); transition: transform .2s ease; border-radius: 10px 10px 0 0; max-height: calc(100vh - 64px); overflow: auto; box-shadow: 0 -18px 44px rgba(23,32,38,.22); }
+      .nav button:before {
+        font-size: .95rem;
+        line-height: 1;
+      }
+      .nav button[data-view="dashboard"]:before { content: "D"; }
+      .nav button[data-view="pos"]:before { content: "POS"; font-size: .7rem; font-weight: 950; }
+      .nav button[data-view="items"]:before { content: "I"; }
+      .nav button[data-view="stocks"]:before { content: "S"; }
+      .nav button[data-view="users"]:before { content: "U"; }
+      .nav button[data-view="orders"]:before { content: "O"; }
+      .catalog {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+      .product {
+        min-height: 132px;
+        gap: 7px;
+        padding: 9px;
+      }
+      .sample {
+        height: auto;
+        grid-template-columns: 1fr;
+        gap: 5px;
+      }
+      .sample-art {
+        display: none;
+      }
+      .product h3 {
+        font-size: .85rem;
+        line-height: 1.15;
+      }
+      .product .hint {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        font-size: .72rem;
+      }
+      .badge {
+        padding: 3px 6px;
+        font-size: .66rem;
+      }
+      .price {
+        font-size: .95rem;
+      }
+      .add-dot {
+        width: 30px;
+        height: 30px;
+      }
+      .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        padding: 10px;
+      }
+      .stat {
+        padding: 10px;
+      }
+      .stat strong {
+        margin-top: 4px;
+        font-size: 1.04rem;
+      }
+      .view-head {
+        padding: 10px 12px;
+      }
+      .view-head .hint {
+        display: none;
+      }
+      .editor {
+        padding: 10px;
+      }
+      .ticket { position: fixed; inset: auto 0 0 0; top: 44px; z-index: 35; transform: translateY(110%); transition: transform .2s ease; border-radius: 10px 10px 0 0; max-height: calc(100dvh - 44px); overflow: auto; box-shadow: 0 -18px 44px rgba(23,32,38,.22); }
       .ticket.open { transform: translateY(0); }
       .drawer-close { display: inline-flex; }
       .mobile-cart {
         display: flex;
-        bottom: calc(68px + env(safe-area-inset-bottom));
+        left: 8px;
+        right: 8px;
+        bottom: calc(54px + env(safe-area-inset-bottom));
+        min-height: 44px;
+        padding: 0 12px;
       }
-      .cart-items { max-height: 28vh; }
+      .ticket-head {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background: white;
+        padding: 10px 12px;
+      }
+      .cart-items {
+        max-height: 34dvh;
+        gap: 7px;
+        padding: 9px;
+      }
+      .cart-line {
+        padding: 8px;
+      }
+      .form-band,
+      .totals,
+      .payment {
+        gap: 8px;
+        padding: 10px;
+      }
+      .form-band h3,
+      .payment h3 {
+        font-size: .86rem;
+      }
+      .total-line {
+        font-size: .82rem;
+      }
+      .form-band textarea {
+        min-height: 48px;
+      }
+      input,
+      select {
+        height: 37px;
+      }
+      label {
+        gap: 4px;
+        font-size: .68rem;
+      }
+      .pay-method {
+        min-height: 34px;
+      }
+      .grand {
+        font-size: 1.08rem;
+      }
       .table-wrap {
         margin: 0;
         overflow: visible;
@@ -404,7 +585,7 @@
         width: 100%;
       }
       tr {
-        padding: 10px 12px;
+        padding: 8px 10px;
         border: 1px solid var(--line);
         border-radius: 8px;
         background: white;
@@ -413,8 +594,9 @@
         display: flex;
         justify-content: space-between;
         gap: 14px;
-        padding: 7px 0;
+        padding: 5px 0;
         border-bottom: 1px dashed #e3e9ed;
+        font-size: .82rem;
       }
       td:last-child { border-bottom: 0; }
       td:before {
@@ -448,30 +630,30 @@
     }
     @media (max-width: 590px) {
       .topbar {
-        padding: 10px 12px;
-        display: grid;
-        grid-template-columns: 1fr auto;
+        display: flex;
+        padding: 7px 8px;
       }
       .mark {
-        width: 38px;
-        height: 38px;
+        width: 34px;
+        height: 34px;
       }
-      .brand p { max-width: 180px; }
+      .brand h1 {
+        font-size: .93rem;
+      }
       .session {
-        grid-column: 1 / -1;
-        width: 100%;
-        display: grid;
-        grid-template-columns: 1fr auto auto auto;
+        width: auto;
+        display: flex;
       }
-      .session select { width: 100%; }
+      .session select { width: 112px; }
       .session .ghost {
         padding: 0 10px;
       }
       .install-btn {
         padding: 0 10px;
+        font-size: .78rem;
       }
       .fullscreen-btn {
-        width: 40px;
+        width: 36px;
       }
       body.fullscreen-mode .brand p,
       body.fullscreen-mode #resetDemo {
@@ -488,17 +670,19 @@
       body.fullscreen-mode main {
         padding-left: 8px;
         padding-right: 8px;
-        padding-top: 112px;
+        padding-top: 58px;
       }
       body.fullscreen-mode .nav {
         top: auto;
       }
-      .catalog, .form-grid, .form-grid.three { grid-template-columns: 1fr; }
-      .product { min-height: 154px; }
-      .card { padding: 11px; }
+      .form-grid, .form-grid.three { grid-template-columns: 1fr; }
+      .catalog {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .card { padding: 9px; }
       .view-head, .ticket-head, .section-head {
         align-items: flex-start;
-        padding: 12px;
+        padding: 10px;
       }
       .view-head {
         flex-direction: column;
@@ -526,7 +710,41 @@
         width: 100%;
       }
       .pay-methods { grid-template-columns: repeat(2, 1fr); }
-      .stats { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 380px) {
+      main {
+        padding-left: 6px;
+        padding-right: 6px;
+      }
+      .brand h1 {
+        font-size: .86rem;
+      }
+      .session select {
+        width: 96px;
+      }
+      .install-btn {
+        max-width: 64px;
+        overflow: hidden;
+      }
+      .catalog {
+        gap: 6px;
+      }
+      .product {
+        min-height: 122px;
+        padding: 8px;
+      }
+      .product .hint {
+        -webkit-line-clamp: 1;
+      }
+      .nav button {
+        min-width: 64px;
+        padding: 0 5px;
+      }
+      .mobile-cart {
+        left: 6px;
+        right: 6px;
+      }
     }
     @media print {
       body * { visibility: hidden; }
@@ -667,6 +885,26 @@
       <div class="form-grid modal-actions" style="padding:13px;border-top:1px solid var(--line)">
         <button class="ghost" id="closeReceiptBtn" type="button">Close</button>
         <button class="primary" id="printReceiptBtn" type="button">Print</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="installModal" role="dialog" aria-modal="true">
+    <div class="install-card">
+      <div class="install-card-body">
+        <h2>Install on Android</h2>
+        <p class="hint" id="installMessage">Checking install availability.</p>
+        <div class="install-warning" id="installWarning"></div>
+        <ol>
+          <li>Open this app in Chrome or Edge on Android.</li>
+          <li>Use an HTTPS address, or run the app from localhost on the Android device.</li>
+          <li>Wait for the app status to show offline ready.</li>
+          <li>Tap <strong>Install</strong>, or use browser menu then <strong>Add to Home screen</strong>.</li>
+        </ol>
+        <div class="form-grid">
+          <button class="ghost" id="closeInstallBtn" type="button">Close</button>
+          <button class="primary" id="tryInstallBtn" type="button">Try Install</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1037,16 +1275,35 @@
     function isInstalledApp() {
       return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
     }
+    function isLocalhostHost() {
+      return ["localhost", "127.0.0.1", "::1"].includes(location.hostname);
+    }
+    function isAndroidDevice() {
+      return /Android/i.test(navigator.userAgent);
+    }
+    function installDiagnostic() {
+      if (isInstalledApp()) return "PrintDesk is already installed.";
+      if (deferredInstallPrompt) return "Chrome says this app is ready to install.";
+      if (!window.isSecureContext && !isLocalhostHost()) {
+        return `Install prompt is blocked because this page is opened from ${location.origin}. Android Chrome requires HTTPS for installable apps, except localhost on the Android device.`;
+      }
+      if (!("serviceWorker" in navigator)) return "This browser does not support service workers, so it cannot install this offline app.";
+      if (!isAndroidDevice()) return "Install prompt is not ready yet. On Android Chrome, wait a moment or use the browser menu and choose Add to Home screen.";
+      return "Install prompt is not ready yet. Refresh once after the app finishes loading, or use Chrome menu then Add to Home screen.";
+    }
     function updateInstallButton() {
       const installButton = $("#installBtn");
       if (!installButton) return;
-      const canInstall = !!deferredInstallPrompt && !isInstalledApp();
-      installButton.classList.toggle("ready", canInstall);
-      installButton.disabled = !canInstall;
+      const installed = isInstalledApp();
+      const canPrompt = !!deferredInstallPrompt && !installed;
+      installButton.classList.toggle("ready", canPrompt);
+      installButton.classList.toggle("unavailable", !canPrompt);
+      installButton.disabled = installed;
+      installButton.textContent = installed ? "Installed" : (canPrompt ? "Install" : "Install Help");
     }
     async function installAndroidApp() {
       if (!deferredInstallPrompt) {
-        updateAppStatus(isInstalledApp() ? "Installed" : "Use browser menu: Add to Home screen", true);
+        showInstallHelp();
         return;
       }
       deferredInstallPrompt.prompt();
@@ -1054,6 +1311,16 @@
       deferredInstallPrompt = null;
       updateInstallButton();
       updateAppStatus(choice.outcome === "accepted" ? "Installing" : "Install dismissed", choice.outcome !== "accepted");
+    }
+    function showInstallHelp() {
+      const message = installDiagnostic();
+      $("#installMessage").textContent = message;
+      $("#installWarning").textContent = !window.isSecureContext && !isLocalhostHost()
+        ? "XAMPP over your Wi-Fi IP address is normal HTTP. The app can still open, but Android will not show the real app install prompt until you serve it through HTTPS."
+        : "If the install prompt does not appear, use the browser menu and choose Add to Home screen.";
+      $("#tryInstallBtn").disabled = !deferredInstallPrompt;
+      $("#installModal").classList.add("open");
+      updateAppStatus(isInstalledApp() ? "Installed" : "Install help", !deferredInstallPrompt);
     }
     function registerServiceWorker() {
       if (!("serviceWorker" in navigator)) {
@@ -1129,9 +1396,12 @@
       $("#tendered").addEventListener("input", renderCart);
       $("#orderType").addEventListener("change", renderCart);
       $("#checkoutBtn").addEventListener("click", checkout);
-      $("#clearBtn").addEventListener("click", () => { cart = []; renderCart(); });
+      $("#clearBtn").addEventListener("click", () => { cart = []; renderCart(); $("#ticketPanel").classList.remove("open"); });
       $("#fullscreenBtn").addEventListener("click", toggleFullscreen);
       $("#installBtn").addEventListener("click", installAndroidApp);
+      $("#tryInstallBtn").addEventListener("click", installAndroidApp);
+      $("#closeInstallBtn").addEventListener("click", () => $("#installModal").classList.remove("open"));
+      $("#installModal").addEventListener("click", e => { if (e.target.id === "installModal") $("#installModal").classList.remove("open"); });
       window.addEventListener("beforeinstallprompt", event => {
         event.preventDefault();
         deferredInstallPrompt = event;

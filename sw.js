@@ -1,4 +1,4 @@
-const CACHE_NAME = "printdesk-pos-v4";
+const CACHE_NAME = "printdesk-pos-v5";
 const APP_SHELL = [
   "./",
   "./printing-pos.html",
