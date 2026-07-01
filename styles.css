@@ -56,7 +56,7 @@ button { border: 0; cursor: pointer; background: none; }
   -webkit-backdrop-filter: blur(14px);
   min-height: var(--topbar-h);
 }
-.brand { display: flex; gap: 12px; align-items: center; min-width: 0; }
+.brand { display: flex; gap: 12px; align-items: center; min-width: 0; flex: 1}
 .mark {
   width: 42px; height: 42px;
   display: block;
@@ -69,7 +69,14 @@ button { border: 0; cursor: pointer; background: none; }
 }
 .brand h1 { margin: 0; font-size: 1.05rem; line-height: 1.1; letter-spacing: -.01em; color: var(--ink); }
 .brand p { margin: 3px 0 0; color: var(--muted); font-size: .8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.session { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+.session {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    flex-wrap: nowrap;
+    flex-shrink: 0;
+}
 
 .user-chip {
   display: inline-flex; align-items: center; gap: 6px;
