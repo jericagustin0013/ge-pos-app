@@ -47,6 +47,8 @@ let activeCategory = "All";
 let editingItemId = null;
 let editingMaterialId = null;
 let editingUserId = null;
+let uploadedItemImage = ""; //for uploading photos //
+let uploadedMaterialImage = ""; //for uploading photos//
 let activePayment = "Cash";
 let deferredInstallPrompt = null;
 const fallbackImg = "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 3"><rect width="4" height="3" fill="%23242424"/></svg>');
@@ -294,18 +296,75 @@ function renderEditors() {
     </div>
     <div class="form-grid three">
       <label>Selling Price (PHP)<input id="itemPrice" type="number" step=".01" value="${item.price || 0}" ${lock}></label>
-      <label>Image URL<input id="itemImage" value="${esc(item.image || "")}" placeholder="./img/your-image.jpg"></label>
+      <label>Upload Photo
+    <input id="itemImage" type="file" accept="image/*">
+</label>
       <label>Computed Cost<input value="${peso.format(itemCost(item))}" readonly></label>
     </div>
     <label>Description<textarea id="itemDesc">${esc(item.desc)}</textarea></label>
     <div><h3>Recipe / Bill of Materials</h3><div class="recipe-list" id="recipeRows">${renderRecipeRows(item.recipe || [])}</div><button class="ghost" id="addRecipeBtn" type="button" style="margin-top:8px">+ Add Material</button></div>
     <div class="form-grid"><button class="ghost" id="cancelItemBtn" type="button">Cancel</button><button class="primary" id="saveItemBtn" type="button">${editingItemId ? "Save Item" : "Create Item"}</button></div>
   </div>`;
+
+  uploadedItemImage = item.image || "";
+
+const fileInput = $("#itemImage");
+
+fileInput.addEventListener("change", function () {
+
+    const file = this.files[0];
+
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+
+        uploadedItemImage = e.target.result;
+
+    };
+
+    reader.readAsDataURL(file);
+
+});
+
+
   const mat = editingMaterialId ? db.materials.find(r => r.id === editingMaterialId) : { name: "", unit: "piece", cost: 0, price: 0, stock: 0, reorder: 0, sellable: false, image: "" };
   $("#materialEditor").innerHTML = `<div class="grid"><div class="form-grid three">
     <label>Name<input id="matName" value="${esc(mat.name)}"></label><label>Unit<input id="matUnit" value="${esc(mat.unit)}"></label><label>Stock<input id="matStock" type="number" step=".01" value="${mat.stock || 0}"></label>
     <label>Raw Cost (PHP)<input id="matCost" type="number" step=".01" value="${mat.cost || 0}" ${lock}></label><label>Selling Price (PHP)<input id="matPrice" type="number" step=".01" value="${mat.price || 0}" ${lock}></label><label>Reorder Point<input id="matReorder" type="number" step=".01" value="${mat.reorder || 0}"></label>
-  </div><div class="form-grid"><label>Image URL<input id="matImage" value="${esc(mat.image || "")}" placeholder="./img/your-image.jpg"></label><label>Sell as add-on<select id="matSellable"><option value="true">Yes</option><option value="false">No</option></select></label></div><div class="form-grid"><button class="ghost" id="cancelMaterialBtn" type="button">Cancel</button><button class="primary" id="saveMaterialBtn" type="button">${editingMaterialId ? "Save Material" : "Create Material"}</button></div></div>`;
+  </div><div class="form-grid"><label>Upload Photo
+    <input id="matImage" type="file" accept="image/*">
+</label><label>Sell as add-on<select id="matSellable"><option value="true">Yes</option><option value="false">No</option></select></label></div><div class="form-grid"><button class="ghost" id="cancelMaterialBtn" type="button">Cancel</button><button class="primary" id="saveMaterialBtn" type="button">${editingMaterialId ? "Save Material" : "Create Material"}</button></div></div>`;
+
+uploadedMaterialImage = mat.image || "";
+
+const matFile = $("#matImage");
+
+if (matFile) {
+    matFile.addEventListener("change", function () {
+
+        const file = this.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+
+            uploadedMaterialImage = e.target.result;
+
+            const preview = $("#matPreview");
+            if (preview) {
+                preview.src = uploadedMaterialImage;
+            }
+
+        };
+
+        reader.readAsDataURL(file);
+
+    });
+};
+
   $("#matSellable").value = String(!!mat.sellable);
   const usr = editingUserId ? db.users.find(r => r.id === editingUserId) : { name: "", role: "Cashier", pin: "", active: true };
   $("#userEditor").innerHTML = `<div class="grid"><div class="form-grid three">
@@ -348,14 +407,14 @@ function addToCart(id) {
 function saveItem() {
   if (!canEditPrices()) return alert("Only Admin or Manager can edit item prices.");
   const recipe = collectRecipeRows();
-  const r = { id: editingItemId || uid("item"), name: $("#itemName").value.trim(), category: $("#itemCategory").value.trim(), unit: $("#itemUnit").value.trim(), price: Number($("#itemPrice").value) || 0, image: $("#itemImage").value.trim(), desc: $("#itemDesc").value.trim(), recipe };
+  const r = { id: editingItemId || uid("item"), name: $("#itemName").value.trim(), category: $("#itemCategory").value.trim(), unit: $("#itemUnit").value.trim(), price: Number($("#itemPrice").value) || 0, image: uploadedItemImage, desc: $("#itemDesc").value.trim(), recipe };
   if (!r.name) return alert("Item name is required.");
   editingItemId ? db.items.splice(db.items.findIndex(x => x.id === editingItemId), 1, r) : db.items.push(r);
   editingItemId = null; saveDb(); renderAll();
 }
 function saveMaterial() {
   if (!canEditPrices()) return alert("Only Admin or Manager can edit material prices.");
-  const r = { id: editingMaterialId || uid("mat"), name: $("#matName").value.trim(), unit: $("#matUnit").value.trim(), stock: Number($("#matStock").value) || 0, cost: Number($("#matCost").value) || 0, price: Number($("#matPrice").value) || 0, reorder: Number($("#matReorder").value) || 0, sellable: $("#matSellable").value === "true", image: $("#matImage").value.trim() };
+  const r = { id: editingMaterialId || uid("mat"), name: $("#matName").value.trim(), unit: $("#matUnit").value.trim(), stock: Number($("#matStock").value) || 0, cost: Number($("#matCost").value) || 0, price: Number($("#matPrice").value) || 0, reorder: Number($("#matReorder").value) || 0, sellable: $("#matSellable").value === "true", image: uploadedMaterialImage };
   if (!r.name) return alert("Material name is required.");
   editingMaterialId ? db.materials.splice(db.materials.findIndex(x => x.id === editingMaterialId), 1, r) : db.materials.push(r);
   editingMaterialId = null; saveDb(); renderAll();
@@ -525,10 +584,73 @@ function bindEvents() {
   $("#receiptModal").addEventListener("click", e => { if (e.target.id === "receiptModal") $("#receiptModal").classList.remove("open"); });
   $("#mobileCartBtn").addEventListener("click", () => $("#ticketPanel").classList.add("open"));
   $("#closeTicketBtn").addEventListener("click", () => $("#ticketPanel").classList.remove("open"));
-  $("#resetDemo").addEventListener("click", async () => {
-    if (!confirm("Reset all demo data? This cannot be undone.")) return;
-    db = structuredClone(seed); cart = []; await idbSet("app-state", db); renderAll(); renderUserChip();
-  });
+  $("#resetDemo").addEventListener("click", () => {
+    $("#resetModal").classList.add("open");
+});
+
+$("#closeResetModal").addEventListener("click", () => {
+    $("#resetModal").classList.remove("open");
+});
+
+document.querySelectorAll(".reset-option").forEach(btn => {
+
+    btn.addEventListener("click", async () => {
+
+        const type = btn.dataset.reset;
+
+        if (!confirm(`Reset ${type}?`))
+            return;
+
+        switch (type) {
+
+            case "dashboard":
+
+                cart = [];
+                $("#customerName").value = "";
+                $("#customerPhone").value = "";
+                $("#jobNotes").value = "";
+                $("#tendered").value = "";
+                setDefaultDueDate();
+
+                break;
+
+            case "stocks":
+
+                db.materials = structuredClone(seed.materials);
+
+                break;
+
+            case "items":
+
+                db.items = structuredClone(seed.items);
+
+                break;
+
+            case "orders":
+
+                db.orders = [];
+
+                break;
+
+            case "all":
+
+                db = structuredClone(seed);
+                cart = [];
+
+                break;
+
+        }
+
+        await idbSet("app-state", db);
+
+        renderAll();
+        renderUserChip();
+
+        $("#resetModal").classList.remove("open");
+
+    });
+
+});
   window.addEventListener("beforeinstallprompt", ev => { ev.preventDefault(); deferredInstallPrompt = ev; updateInstallButton(); updateAppStatus("Ready to install"); });
   window.addEventListener("appinstalled", () => { deferredInstallPrompt = null; updateInstallButton(); updateAppStatus("Installed"); });
   window.addEventListener("online", () => updateAppStatus());

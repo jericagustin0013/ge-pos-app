@@ -13,6 +13,43 @@
   <link rel="stylesheet" href="./styles.css">
   <title>Graphique Eloise POS</title>
 </head>
+<div class="modal" id="resetModal">
+  <div class="install-card">
+    <div class="install-card-body">
+      <h2>Reset Data</h2>
+      <p>Select what you want to reset.</p>
+
+      <div class="reset-options">
+        <button class="primary reset-option" data-reset="dashboard">
+          Dashboard Only
+        </button>
+
+        <button class="primary reset-option" data-reset="stocks">
+          Stocks
+        </button>
+
+        <button class="primary reset-option" data-reset="items">
+          Products & Services
+        </button>
+
+        <button class="primary reset-option" data-reset="orders">
+          Orders
+        </button>
+
+        <button class="danger reset-option" data-reset="all">
+          Whole Application
+        </button>
+      </div>
+
+      <br>
+
+      <button class="ghost" id="closeResetModal">
+        Cancel
+      </button>
+
+    </div>
+  </div>
+</div>
 <body class="locked">
   <div class="login-screen" id="loginScreen">
     <form class="login-card" id="loginForm" autocomplete="off">
