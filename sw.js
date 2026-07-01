@@ -1,12 +1,26 @@
-const CACHE_NAME = "printdesk-pos-v5";
+const CACHE_NAME = "graphique-eloise-v2";
 const APP_SHELL = [
   "./",
   "./printing-pos.html",
+  "./styles.css",
+  "./app.js",
   "./android-install.html",
   "./manifest.webmanifest",
-  "./printdesk-icon.svg",
-  "./printdesk-icon-192.png",
-  "./printdesk-icon-512.png"
+  "./icon.svg",
+  "./icon-192.png",
+  "./icon-512.png",
+  "./img/logo.png",
+  "./img/mat-a4.jpg",
+  "./img/mat-phototop.jpg",
+  "./img/mat-sintra.jpg",
+  "./img/mat-ink-bw.jpg",
+  "./img/mat-ink-color.jpg",
+  "./img/mat-laminate.jpg",
+  "./img/svc-bw.jpg",
+  "./img/svc-color.jpg",
+  "./img/svc-sintra.jpg",
+  "./img/svc-lamination.jpg",
+  "./img/svc-design.jpg",
 ];
 
 self.addEventListener("install", event => {
