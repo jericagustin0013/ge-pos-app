@@ -478,7 +478,7 @@ td.actions { width: 1%; white-space: nowrap; }
   .topbar { padding: 8px 10px; }
   .brand p { display: none; }
   .fullscreen-btn { display: none !important; }
-  .session .ghost#resetDemo { display: none; }
+  .session .ghost#resetDemo { display: inline-flex; }
   .app-status { display: none; }
   .catalog { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   .product-img { aspect-ratio: 1 / 1; }
@@ -515,6 +515,20 @@ td.actions { width: 1%; white-space: nowrap; }
   .cart-controls .icon { width: 100%; }
   .pay-methods { grid-template-columns: repeat(2, 1fr); }
   .user-chip { display: none; }
+
+  .reset-options{
+
+        grid-template-columns:1fr;
+
+    }
+
+    .reset-footer .ghost{
+
+        width:100%;
+
+    }
+
+
 }
 
 @media print {
@@ -560,3 +574,119 @@ body.locked .topbar,
 body.locked .nav.sticky-nav,
 body.locked main,
 body.locked .mobile-cart { display: none; }
+
+/* RESET MODAL */
+
+#resetModal .install-card{
+    width:min(700px,95vw);
+}
+
+#resetModal .install-card-body{
+    padding:28px;
+}
+
+#resetModal h2{
+    color:var(--yellow);
+    margin-bottom:6px;
+}
+
+#resetModal p{
+    color:var(--muted);
+    margin:0 0 20px;
+}
+
+.reset-options{
+
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:16px;
+
+}
+
+.reset-card{
+
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+
+    padding:18px;
+
+    border:1px solid var(--line);
+    border-radius:14px;
+
+    background:var(--surface-2);
+
+    transition:.2s;
+
+    text-align:left;
+
+}
+
+.reset-card:hover{
+
+    border-color:var(--yellow);
+    background:var(--surface-3);
+
+    transform:translateY(-3px);
+
+}
+
+.reset-card strong{
+
+    margin-top:12px;
+    color:var(--ink);
+    font-size:1rem;
+
+}
+
+.reset-card small{
+
+    margin-top:6px;
+    color:var(--muted);
+    line-height:1.4;
+
+}
+
+.reset-icon{
+
+    width:52px;
+    height:52px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:12px;
+
+    background:rgba(229,255,0,.12);
+
+    font-size:24px;
+
+}
+
+.reset-card.danger{
+
+    border-color:rgba(255,91,122,.35);
+
+}
+
+.reset-card.danger .reset-icon{
+
+    background:rgba(255,91,122,.15);
+
+}
+
+.reset-card.danger:hover{
+
+    border-color:var(--rose);
+
+}
+
+.reset-footer{
+
+    margin-top:24px;
+
+    display:flex;
+    justify-content:flex-end;
+
+}

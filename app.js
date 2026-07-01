@@ -592,7 +592,7 @@ $("#closeResetModal").addEventListener("click", () => {
     $("#resetModal").classList.remove("open");
 });
 
-document.querySelectorAll(".reset-option").forEach(btn => {
+document.querySelectorAll(".reset-card").forEach(btn => {
 
     btn.addEventListener("click", async () => {
 

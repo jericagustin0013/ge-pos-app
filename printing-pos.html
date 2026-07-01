@@ -20,32 +20,44 @@
       <p>Select what you want to reset.</p>
 
       <div class="reset-options">
-        <button class="primary reset-option" data-reset="dashboard">
-          Dashboard Only
-        </button>
 
-        <button class="primary reset-option" data-reset="stocks">
-          Stocks
-        </button>
+  <button class="reset-card" data-reset="dashboard">
+    <span class="reset-icon">📊</span>
+    <strong>Dashboard</strong>
+    <small>Clear current cart and customer data</small>
+  </button>
 
-        <button class="primary reset-option" data-reset="items">
-          Products & Services
-        </button>
+  <button class="reset-card" data-reset="stocks">
+    <span class="reset-icon">📦</span>
+    <strong>Stocks</strong>
+    <small>Restore raw materials</small>
+  </button>
 
-        <button class="primary reset-option" data-reset="orders">
-          Orders
-        </button>
+  <button class="reset-card" data-reset="items">
+    <span class="reset-icon">🛍️</span>
+    <strong>Products</strong>
+    <small>Restore products & services</small>
+  </button>
 
-        <button class="danger reset-option" data-reset="all">
-          Whole Application
-        </button>
-      </div>
+  <button class="reset-card" data-reset="orders">
+    <span class="reset-icon">🧾</span>
+    <strong>Orders</strong>
+    <small>Delete all completed orders</small>
+  </button>
 
-      <br>
+  <button class="reset-card danger" data-reset="all">
+    <span class="reset-icon">⚠️</span>
+    <strong>Whole App</strong>
+    <small>Reset everything</small>
+  </button>
 
-      <button class="ghost" id="closeResetModal">
+</div>
+
+<div class="reset-footer">
+    <button class="ghost" id="closeResetModal">
         Cancel
-      </button>
+    </button>
+</div>
 
     </div>
   </div>
@@ -163,6 +175,8 @@
         </div>
       </section>
     </section>
+
+    
 
     <aside class="ticket panel" id="ticketPanel">
       <div class="ticket-head">
